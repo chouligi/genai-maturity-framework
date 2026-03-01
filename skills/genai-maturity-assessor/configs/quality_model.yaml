@@ -1,0 +1,203 @@
+version: 1
+framework_source:
+  maturity_levels: paper_table_1_ml_maturity_framework
+  quality_requirements: genai_adaptation_docx
+
+characteristics:
+  utility:
+    display_name: Utility
+    description: Ability to provide useful, effective, and usable outcomes.
+  economy:
+    display_name: Economy
+    description: Sustainability of cost-to-value and operational efficiency.
+  robustness:
+    display_name: Robustness
+    description: Reliability under failures, changes, and scale.
+  productionizability:
+    display_name: Productionizability
+    description: Operational readiness and repeatability in production.
+  modifiability:
+    display_name: Modifiability
+    description: Ease and safety of changing the system over time.
+  comprehensibility:
+    display_name: Comprehensibility
+    description: Clarity, discoverability, and traceability for humans.
+  responsibility:
+    display_name: Responsibility
+    description: Trustworthiness, governance, and safety.
+
+sub_characteristics:
+  - id: accuracy
+    display_name: Accuracy
+    characteristic: utility
+    minimal_requirement: Beats a baseline on a small golden set (minimum 50 examples) validated by domain experts.
+    full_requirement: Beats a baseline on a comprehensive golden set (minimum 200 examples) with automated metrics and human evaluation.
+    rationale: Sophisticated evaluation must capture factuality, relevance, task completion, and safety.
+
+  - id: effectiveness
+    display_name: Effectiveness
+    characteristic: utility
+    minimal_requirement: Effectiveness verified with an A/B experiment showing positive impact on business metrics.
+    full_requirement: Effectiveness revalidated periodically and after major changes with no sustained degradation.
+    rationale: Offline scores alone do not guarantee real-world impact.
+
+  - id: responsiveness
+    display_name: Responsiveness
+    characteristic: utility
+    minimal_requirement: "-"
+    full_requirement: P95 and P99 latency targets are tracked and within acceptable bounds for the use case.
+    rationale: Poor latency undermines adoption and user trust.
+
+  - id: usability
+    display_name: Usability
+    characteristic: utility
+    minimal_requirement: "-"
+    full_requirement: System is deployed in an accessible serving infrastructure with appropriate user interfaces.
+    rationale: Useful outputs must be reachable by intended users.
+
+  - id: cost_effectiveness
+    display_name: Cost-Effectiveness
+    characteristic: economy
+    minimal_requirement: System costs are comprehensively tracked and documented.
+    full_requirement: Documented value generated exceeds total costs by a measurable margin.
+    rationale: GenAI inference and retrieval costs can grow rapidly in production.
+
+  - id: efficiency
+    display_name: Efficiency
+    characteristic: economy
+    minimal_requirement: Basic operations are automated (evaluation runs, prompt updates, knowledge base refreshes).
+    full_requirement: Prompts are token-efficient or model tuning/routing is optimized for cost-latency-performance tradeoffs.
+    rationale: Small inefficiencies multiply quickly at high traffic.
+
+  - id: availability
+    display_name: Availability
+    characteristic: robustness
+    minimal_requirement: "-"
+    full_requirement: Deployed service meets defined SLAs with fallback strategies.
+    rationale: Downtime directly impacts business outcomes.
+
+  - id: resilience
+    display_name: Resilience
+    characteristic: robustness
+    minimal_requirement: Automated update pipelines have successful completion rate of at least 80% per quarter.
+    full_requirement: Automated update pipeline success is at least 90% per quarter with rollback capability.
+    rationale: Multi-component GenAI systems need safe failure handling.
+
+  - id: adaptability
+    display_name: Adaptability
+    characteristic: robustness
+    minimal_requirement: Documented manual process exists for updating system behavior.
+    full_requirement: Automated mechanisms exist for behavior updates with user feedback integration.
+    rationale: Static behavior degrades as users and knowledge evolve.
+
+  - id: scalability
+    display_name: Scalability
+    characteristic: robustness
+    minimal_requirement: "-"
+    full_requirement: System dynamically scales resources based on traffic patterns with rate limiting and cost controls.
+    rationale: Traffic spikes should not collapse quality or economics.
+
+  - id: repeatability
+    display_name: Repeatability
+    characteristic: productionizability
+    minimal_requirement: Prompt updates or fine-tuning processes are partially automated.
+    full_requirement: Update processes (prompts, fine-tuning, evaluations) are fully automated and version controlled.
+    rationale: Manual release loops are brittle and non-repeatable.
+
+  - id: monitoring
+    display_name: Monitoring
+    characteristic: productionizability
+    minimal_requirement: Basic operational metrics are monitored (latency, errors, throughput, tokens).
+    full_requirement: Continuous automated evaluation is running on defined quality metrics.
+    rationale: GenAI systems require continuous quality and cost visibility.
+
+  - id: maintainability
+    display_name: Maintainability
+    characteristic: modifiability
+    minimal_requirement: Prompts and code are versioned in source control.
+    full_requirement: All key artifacts are versioned with change logs explaining rationale.
+    rationale: Prompt and tool changes must be auditable and reversible.
+
+  - id: modularity
+    display_name: Modularity
+    characteristic: modifiability
+    minimal_requirement: Components are partially separated (prompt templates, retrieval, post-processing).
+    full_requirement: Components are fully modular with clear interfaces.
+    rationale: Modular boundaries reduce regression risk and speed iteration.
+
+  - id: testability
+    display_name: Testability
+    characteristic: modifiability
+    minimal_requirement: Source code has at least 50% test coverage.
+    full_requirement: At least 80% test coverage including integration and adversarial cases.
+    rationale: Reliable change velocity requires robust automated testing.
+
+  - id: operability
+    display_name: Operability
+    characteristic: modifiability
+    minimal_requirement: System is deployed with versioned releases and rollback capability.
+    full_requirement: Progressive rollouts, safe rollback, and runtime kill switches are supported.
+    rationale: Production incidents require fast, controlled recovery.
+
+  - id: discoverability
+    display_name: Discoverability
+    characteristic: comprehensibility
+    minimal_requirement: "-"
+    full_requirement: System has a searchable registry entry with metadata and ownership.
+    rationale: Discoverability prevents duplication and improves governance.
+
+  - id: readability
+    display_name: Readability
+    characteristic: comprehensibility
+    minimal_requirement: Prompts follow a consistent style guide.
+    full_requirement: Prompts and source code follow unified style standards with clear structure.
+    rationale: Readable artifacts reduce maintenance and onboarding cost.
+
+  - id: traceability
+    display_name: Traceability
+    characteristic: comprehensibility
+    minimal_requirement: Prompt versions and basic metadata are logged.
+    full_requirement: End-to-end lineage is tracked across prompts, models, context, tools, and post-processing.
+    rationale: Debugging and compliance require full execution lineage.
+
+  - id: understandability
+    display_name: Understandability
+    characteristic: comprehensibility
+    minimal_requirement: System has partial documentation covering basic functionality.
+    full_requirement: Comprehensive architecture, limitations, runbooks, and onboarding documentation exist.
+    rationale: Teams need shared understanding to operate safely at scale.
+
+  - id: explainability
+    display_name: Explainability
+    characteristic: responsibility
+    minimal_requirement: System provides basic reasoning or confidence signals where applicable.
+    full_requirement: User-facing transparency mechanisms are implemented (citations, tool traces, confidence where relevant).
+    rationale: Transparent behavior improves trust and oversight.
+
+  - id: fairness
+    display_name: Fairness
+    characteristic: responsibility
+    minimal_requirement: Basic fairness considerations are documented.
+    full_requirement: Performance is evaluated across relevant groups with mitigation strategies for disparities.
+    rationale: GenAI systems can amplify bias without explicit checks.
+
+  - id: ownership
+    display_name: Ownership
+    characteristic: responsibility
+    minimal_requirement: "-"
+    full_requirement: A designated team is accountable for operating and maintaining the system.
+    rationale: Ownership is required for incident response and long-term quality.
+
+  - id: standards_compliance
+    display_name: Standards Compliance
+    characteristic: responsibility
+    minimal_requirement: "-"
+    full_requirement: Applicable legal, regulatory, and industry standards are met.
+    rationale: Compliance constraints are mandatory, not optional.
+
+  - id: vulnerability
+    display_name: Vulnerability
+    characteristic: responsibility
+    minimal_requirement: Basic security controls are implemented.
+    full_requirement: Multi-layer security controls are in place, including adversarial testing and regular audits.
+    rationale: GenAI attack surfaces require layered defense.

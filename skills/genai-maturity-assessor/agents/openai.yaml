@@ -1,0 +1,4 @@
+interface:
+  display_name: "GenAI Maturity Assessor"
+  short_description: "Assess GenAI quality and maturity"
+  default_prompt: "Use $genai-maturity-assessor to assess my GenAI system and generate an HTML/PDF maturity report."
