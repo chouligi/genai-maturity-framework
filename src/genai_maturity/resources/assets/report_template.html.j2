@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ data.title }}</title>
+  <style>{{ css }}</style>
+</head>
+<body>
+  {% set score = data.quality_score %}
+  {% if score >= 85 %}
+    {% set quality_band = "High quality posture" %}
+  {% elif score >= 65 %}
+    {% set quality_band = "Moderate quality posture" %}
+  {% else %}
+    {% set quality_band = "Needs major quality improvements" %}
+  {% endif %}
+  <main class="page">
+    <section class="hero">
+      <div class="hero-head">
+        <h1>{{ data.title }}</h1>
+        {% if data.brand_logo_data_uri %}
+        <div class="brand-logo-wrap">
+          <img src="{{ data.brand_logo_data_uri }}" alt="Beyond the Demo logo" class="brand-logo" />
+        </div>
+        {% endif %}
+      </div>
+      <div class="hero-meta-grid">
+        <div class="hero-meta-card">
+          <div class="meta-label">System</div>
+          <div class="meta-value">{{ data.system.name or "Unnamed" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Team</div>
+          <div class="meta-value">{{ data.system.owner_team or "N/A" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Date</div>
+          <div class="meta-value">{{ data.system.assessment_date or "N/A" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Assessor</div>
+          <div class="meta-value">{{ data.system.assessor or "N/A" }}</div>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <article class="card">
+          <div class="label">Quality Score</div>
+          <div class="value">{{ "%.2f"|format(data.quality_score) }}</div>
+        </article>
+        <article class="card">
+          <div class="label">Actual Maturity</div>
+          <div class="value">L{{ data.actual_level }}</div>
+        </article>
+        <article class="card">
+          <div class="label">Required Maturity</div>
+          <div class="value">L{{ data.required_level }}</div>
+        </article>
+        <article class="card">
+          <div class="label">Criticality</div>
+          <div class="value" style="font-size:18px">{{ data.criticality.replace('_', ' ')|title }}</div>
+        </article>
+      </div>
+      <p style="margin-top:14px">
+        {% if data.maturity_status == "met" %}
+          <span class="badge met">Maturity target met</span>
+        {% else %}
+          <span class="badge below">Below required maturity</span>
+        {% endif %}
+        <span class="badge neutral">{{ quality_band }}</span>
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Maturity Level</h2>
+      <div class="ladder">
+        {% for level in [1,2,3,4,5] %}
+        <div class="level{% if level == data.actual_level %} actual{% endif %}{% if level == data.required_level %} required{% endif %}">L{{ level }}</div>
+        {% endfor %}
+      </div>
+      <div class="ladder-legend">
+        <span class="legend-item"><span class="legend-dot actual"></span>Current maturity</span>
+        <span class="legend-item"><span class="legend-dot required"></span>Expected maturity based on business criticality</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Characteristic Scores</h2>
+      {% for item in data.characteristics %}
+      <div class="score-row">
+        <div>{{ item.display_name }}</div>
+        <div class="track"><div class="fill" style="width: {{ item.score }}%"></div></div>
+        <div><strong>{{ "%.1f"|format(item.score) }}</strong></div>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="section">
+      <h2>Action Summary</h2>
+      <div class="summary-grid action-grid">
+        <article class="card">
+          <div class="label">Critical actions</div>
+          <div class="value">{{ data.action_counts.critical }}</div>
+        </article>
+        <article class="card">
+          <div class="label">Important actions</div>
+          <div class="value">{{ data.action_counts.important }}</div>
+        </article>
+        <article class="card">
+          <div class="label">Nice-to-have actions</div>
+          <div class="value">{{ data.action_counts.nice_to_have }}</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Priority Actions</h2>
+
+      <div class="gap-group">
+        <h3>Critical</h3>
+        {% if data.priority_buckets.critical %}
+          {% for item in data.priority_buckets.critical %}
+          <article class="gap-item critical">
+            <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
+            {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
+            <div class="action"><strong>Action:</strong> {{ item.action }}</div>
+          </article>
+          {% endfor %}
+        {% else %}
+          <p>No critical gaps.</p>
+        {% endif %}
+      </div>
+
+      <div class="gap-group">
+        <h3>Important</h3>
+        {% if data.priority_buckets.important %}
+          {% for item in data.priority_buckets.important %}
+          <article class="gap-item important">
+            <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
+            {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
+            <div class="action"><strong>Action:</strong> {{ item.action }}</div>
+          </article>
+          {% endfor %}
+        {% else %}
+          <p>No important gaps.</p>
+        {% endif %}
+      </div>
+
+      <div class="gap-group">
+        <h3>Nice to Have</h3>
+        {% if data.priority_buckets.nice_to_have %}
+          {% for item in data.priority_buckets.nice_to_have %}
+          <article class="gap-item nice_to_have">
+            <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
+            {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
+            <div class="action"><strong>Action:</strong> {{ item.action }}</div>
+          </article>
+          {% endfor %}
+        {% else %}
+          <p>No nice-to-have gaps.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Gap Register</h2>
+      <table class="gap-table">
+        <thead>
+          <tr>
+            <th>Sub-characteristic</th>
+            <th>Category</th>
+            <th>Gap</th>
+            <th>Blocks Level</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in data.gap_items %}
+          <tr>
+            <td>{{ item.display_name }}</td>
+            <td>{{ item.characteristic }}</td>
+            <td>{{ item.current_gap }}</td>
+            <td>L{{ item.first_unmet_level }}</td>
+            <td>{{ item.priority }}</td>
+          </tr>
+          {% endfor %}
+          {% if not data.gap_items %}
+          <tr><td colspan="5">No open gaps.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <p class="footer-note">Method: gap scores no=0, small=1, large=2; quality score uses denominator 2 x assessed sub-characteristics. Maturity level computed from Table 1 level gates encoded in configs.</p>
+      <p class="footer-note">© 2026 George Chouliaras. All rights reserved.</p>
+    </section>
+  </main>
+</body>
+</html>

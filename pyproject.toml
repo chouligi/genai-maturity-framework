@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genai_maturity"
+version = "0.1.0"
+description = "GenAI maturity assessment engine and reporting toolkit"
+requires-python = ">=3.11"
+dependencies = [
+  "Jinja2>=3.1",
+  "PyYAML>=6.0",
+  "playwright>=1.40",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+genai-maturity-report = "genai_maturity.cli.build_report:main"
+genai-maturity-validate = "genai_maturity.cli.validate_configs:main"
+genai-maturity-render-pdf = "genai_maturity.cli.render_pdf_playwright:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+genai_maturity = [
+  "resources/configs/*",
+  "resources/assets/*",
+  "resources/examples/*",
+]

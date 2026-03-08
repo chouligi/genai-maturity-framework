@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from engine.core import (
+from genai_maturity.engine.core import (
     build_gap_priorities,
     classify_criticality,
     compute_actual_maturity,

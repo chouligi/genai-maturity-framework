@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -76,9 +75,7 @@ def main() -> int:
     except Exception as node_error:  # noqa: BLE001
         print(
             "Could not render PDF with Playwright. "
-            "Install Playwright (Python or Node) and Chromium browser, then retry.\n"
-            "Recommended setup:\n"
-            "  bash skills/genai-maturity-assessor/scripts/bootstrap.sh",
+            "Install Playwright (Python or Node) and Chromium browser, then retry.",
             file=sys.stderr,
         )
         if python_error is not None:

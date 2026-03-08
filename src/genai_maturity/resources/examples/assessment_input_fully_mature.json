@@ -1,0 +1,43 @@
+{
+  "system": {
+    "name": "Example Fully Mature GenAI System",
+    "owner_team": "AI Core",
+    "assessment_date": "2026-02-28",
+    "assessor": "Example Assessor"
+  },
+  "criticality_answers": {
+    "in_production": true,
+    "high_request_volume_top_third": true,
+    "dependent_teams_ge_4": true,
+    "revenue_impact_gt_1pct": true,
+    "strategic_importance": true
+  },
+  "gaps": {
+    "accuracy": "no",
+    "effectiveness": "no",
+    "responsiveness": "no",
+    "usability": "no",
+    "cost_effectiveness": "no",
+    "efficiency": "no",
+    "availability": "no",
+    "resilience": "no",
+    "adaptability": "no",
+    "scalability": "no",
+    "repeatability": "no",
+    "monitoring": "no",
+    "maintainability": "no",
+    "modularity": "no",
+    "testability": "no",
+    "operability": "no",
+    "discoverability": "no",
+    "readability": "no",
+    "traceability": "no",
+    "understandability": "no",
+    "explainability": "no",
+    "fairness": "no",
+    "ownership": "no",
+    "standards_compliance": "no",
+    "vulnerability": "no"
+  },
+  "evidence": {}
+}

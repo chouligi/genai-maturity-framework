@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from interview import collect_signals, infer_gaps, normalize_input_payload, normalize_signals_payload
+from genai_maturity.io import interview as interview_module
+from genai_maturity.io.interview import (
+    collect_signals,
+    infer_gaps,
+    normalize_input_payload,
+    normalize_signals_payload,
+)
 
 
 def test_normalize_input_payload__parses_string_booleans_is_correct(
@@ -127,7 +133,7 @@ def test_collect_signals__skips_followup_when_ask_if_is_false(
 ) -> None:
     answers = iter(["n", "y"])
 
-    monkeypatch.setattr("interview._ask", lambda prompt: next(answers))
+    monkeypatch.setattr(interview_module, "_ask", lambda prompt: next(answers))
 
     signals = collect_signals(minimal_inference_config)
 

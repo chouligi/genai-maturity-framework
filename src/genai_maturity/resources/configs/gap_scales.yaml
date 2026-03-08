@@ -1,0 +1,11 @@
+gaps:
+  "no": 0
+  small: 1
+  large: 2
+
+fulfillment:
+  full_met:
+    - "no"
+  min_met:
+    - "no"
+    - small

@@ -5,9 +5,12 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "io"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SRC_ROOT = REPO_ROOT / "src"
+if str(SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(SRC_ROOT))
+
+import genai_maturity
 
 
 @pytest.fixture()
@@ -63,4 +66,4 @@ def minimal_criticality_rules() -> dict[str, object]:
 
 @pytest.fixture()
 def skill_root() -> Path:
-    return ROOT
+    return Path(genai_maturity.__file__).resolve().parent / "resources"

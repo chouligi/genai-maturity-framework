@@ -1,31 +1,20 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+from genai_maturity.engine.core import load_configs, validate_configs
 
-try:
-    from engine.core import load_configs, validate_configs
-except ModuleNotFoundError as exc:
-    missing_module = exc.name or "dependency"
-    setup_msg = (
-        f"Missing Python dependency '{missing_module}'.\n"
-        "Run setup once:\n"
-        "  bash skills/genai-maturity-assessor/scripts/bootstrap.sh"
-    )
-    raise SystemExit(setup_msg) from exc
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG_DIR = ROOT / "resources" / "configs"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate config integrity for genai-maturity-assessor.")
+    parser = argparse.ArgumentParser(description="Validate config integrity for genai_maturity.")
     parser.add_argument(
         "--config-dir",
-        default=str(ROOT / "configs"),
-        help="Path to config directory (default: skill configs).",
+        default=str(DEFAULT_CONFIG_DIR),
+        help="Path to config directory (default: package configs).",
     )
     args = parser.parse_args()
 

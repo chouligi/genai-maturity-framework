@@ -1,0 +1,76 @@
+recommendations:
+  accuracy:
+    min_action: Build a 50+ example expert-validated golden set and verify baseline outperformance.
+    full_action: Expand to a 200+ example golden dataset with automated evals plus periodic human review.
+  effectiveness:
+    min_action: Run an A/B experiment tied to a primary business KPI and document results.
+    full_action: Conduct periodic A/B experiments (block-out) where you test against the previous control group or a baseline.
+  responsiveness:
+    min_action: "-"
+    full_action: Define and track P95/P99 latency continuously and enforce SLO compliance.
+  usability:
+    min_action: "-"
+    full_action: Deploy a production-grade serving interface with explicit usability ownership.
+  cost_effectiveness:
+    min_action: Document and report all major cost components (API costs, storage, compute, human reviews, etc).
+    full_action: Demonstrate sustained positive ROI and establish budget guardrails.
+  efficiency:
+    min_action: Automate basic operations such as evaluation, prompt release, and knowledge refresh workflows.
+    full_action: Optimize prompts for token efficiency (in case of prompt based model) or fine-tuning for cost-latency-quality efficiency (in case of fine-tuned).
+  availability:
+    min_action: "-"
+    full_action: Define and meet availability SLA targets with monitored fallback behavior.
+  resilience:
+    min_action: Raise automated pipeline (e.g., prompt updates, RAG index refresh, continuous evaluation) success rate to at least 80% per quarter.
+    full_action: Raise automated pipeline success rate to at least 90%.
+  adaptability:
+    min_action: Document a repeatable process for behavior updates.
+    full_action: Automate update loops using feedback and evaluation-gated releases.
+  scalability:
+    min_action: "-"
+    full_action: Implement dynamic scaling with rate limiting and cost controls.
+  repeatability:
+    min_action: Partially automate prompt/model update pipelines.
+    full_action: Fully automate update/evaluation flow with versioning.
+  operability:
+    min_action: Ensure versioned deployment and rollback.
+    full_action: Add canary rollouts, safe rollback automation, and runtime kill switches.
+  monitoring:
+    min_action: Track core operational and token/cost metrics (e.g., response times, error rates, throughput, token usage).
+    full_action: Add continuous automated output quality evaluation.
+  maintainability:
+    min_action: Version prompts and code in source control.
+    full_action: Version all key artifacts with structured change rationale.
+  modularity:
+    min_action: Separate core components into modules, even partially.
+    full_action: Fully enforce modularity across retrieval, prompting, generation, and safety components.
+  testability:
+    min_action: Reach at least 50% source code coverage.
+    full_action: Reach at least 80% source code coverage with integration and adversarial tests.
+  discoverability:
+    min_action: "-"
+    full_action: Register the system with searchable metadata (e.g., model details, prompts, example usage, limitations, ownership).
+  readability:
+    min_action: Apply a prompt style guide and structure conventions.
+    full_action: Enforce unified readability standards for prompts and source code.
+  traceability:
+    min_action: Log prompt versions and core request metadata (e.g., timestamp, user ID, session ID, model version, model parameters).
+    full_action: Capture end-to-end lineage across models, context, tool calls, reasoning traces and post-processing steps.
+  understandability:
+    min_action: Document core system information (e.g., system components, key modeling decision, evaluation results).
+    full_action: Fully document the system's architecture (e.g., prompt engineering or finetunine rationale, known limitations, onboarding guides).
+  explainability:
+    min_action: Expose basic reasoning or confidence signals where applicable.
+    full_action: Provide user-facing transparency artifacts (citations, tool traces, confidence).
+  fairness:
+    min_action: Document known fairness risks and assumptions.
+    full_action: Evaluate across relevant demographic groups and implement mitigation for harmful disparities.
+  ownership:
+    min_action: "-"
+    full_action: Assign a formally accountable team or individual as system owner with explicit responsibilities.
+  standards_compliance:
+    min_action: "-"
+    full_action: Demonstrate compliance with required legal and industry standards.
+  vulnerability:
+    min_action: Implement baseline protections (input sanitization, secret handling, prompt injection checks).
+    full_action: Add multi-layered security controls including bot detection, red teaming exercises, PII redaction, jailbreak defenses, and security audits.

@@ -1,0 +1,4 @@
+[console_scripts]
+genai-maturity-render-pdf = genai_maturity.cli.render_pdf_playwright:main
+genai-maturity-report = genai_maturity.cli.build_report:main
+genai-maturity-validate = genai_maturity.cli.validate_configs:main

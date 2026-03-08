@@ -1,38 +1,21 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
-import base64
 import json
-import mimetypes
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "io"))
+from genai_maturity.engine.core import build_assessment_result, load_configs, validate_configs
+from genai_maturity.io.exporters import write_gap_csv, write_json
+from genai_maturity.io.interview import normalize_input_payload, run_guided_interview
+from genai_maturity.reporting.html_report import render_html_report
 
-try:
-    from engine.core import build_assessment_result, load_configs, validate_configs
-    from exporters import write_gap_csv, write_json
-    from interview import normalize_input_payload, run_guided_interview
-    from reporting.html_report import render_html_report
-except ModuleNotFoundError as exc:
-    missing_module = exc.name or "dependency"
-    setup_msg = (
-        f"Missing Python dependency '{missing_module}'.\n"
-        "Run setup once:\n"
-        "  bash skills/genai-maturity-assessor/scripts/bootstrap.sh\n"
-        "Or manually:\n"
-        "  uv venv .venv\n"
-        "  uv pip install --python .venv/bin/python "
-        "-r skills/genai-maturity-assessor/requirements.txt\n"
-        "  uv run --python .venv/bin/python python -m playwright install chromium"
-    )
-    raise SystemExit(setup_msg) from exc
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CONFIG_DIR = ROOT / "resources" / "configs"
+DEFAULT_ASSETS_DIR = ROOT / "resources" / "assets"
 
 
 def _load_payload(path: Path) -> dict[str, Any]:
@@ -60,6 +43,9 @@ def _priority_buckets(items: list[dict[str, Any]]) -> dict[str, list[dict[str, A
 
 
 def _file_to_data_uri(path: Path) -> str:
+    import base64
+    import mimetypes
+
     mime_type, _ = mimetypes.guess_type(path.name)
     if not mime_type:
         mime_type = "application/octet-stream"
@@ -90,8 +76,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Build GenAI maturity assessment report (JSON/CSV/HTML/PDF)."
     )
-    parser.add_argument("--config-dir", default=str(ROOT / "configs"))
-    parser.add_argument("--assets-dir", default=str(ROOT / "assets"))
+    parser.add_argument("--config-dir", default=str(DEFAULT_CONFIG_DIR))
+    parser.add_argument("--assets-dir", default=str(DEFAULT_ASSETS_DIR))
     parser.add_argument("--output-dir", default=None)
     parser.add_argument(
         "--input-json",
@@ -141,7 +127,7 @@ def main() -> int:
     now_utc = datetime.now(timezone.utc)
     timestamp = now_utc.strftime("%Y%m%d_%H%M%S")
     generated_at_display = now_utc.strftime("%Y-%m-%d %H:%M")
-    output_dir = Path(args.output_dir) if args.output_dir else ROOT / "reports" / timestamp
+    output_dir = Path(args.output_dir) if args.output_dir else Path.cwd() / "reports" / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
 
     result["generated_at_utc"] = now_utc.isoformat()
@@ -204,7 +190,8 @@ def main() -> int:
     if not args.no_pdf:
         cmd = [
             sys.executable,
-            str(ROOT / "scripts" / "render_pdf_playwright.py"),
+            "-m",
+            "genai_maturity.cli.render_pdf_playwright",
             "--input-html",
             str(html_path),
             "--output-pdf",

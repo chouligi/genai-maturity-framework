@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from reporting.html_report import render_html_report
+from genai_maturity.reporting.html_report import render_html_report
 
 
 def test_render_html_report__includes_inference_rationale(skill_root: Path, tmp_path: Path) -> None:

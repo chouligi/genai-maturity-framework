@@ -19,11 +19,11 @@ else
   echo "Using existing virtual environment at ${PROJECT_ROOT}/.venv"
 fi
 
-echo "Installing Python dependencies"
-uv pip install --python .venv/bin/python -r "${SKILL_DIR}/requirements.txt"
+echo "Installing package and development dependencies"
+uv pip install --python .venv/bin/python -e ".[dev]"
 
 echo "Installing Playwright Chromium"
 uv run --python .venv/bin/python python -m playwright install chromium
 
 echo "Setup complete."
-echo "Run report: uv run --python .venv/bin/python python skills/genai-maturity-assessor/scripts/build_report.py"
+echo "Run report: uv run --python .venv/bin/python genai-maturity-report"

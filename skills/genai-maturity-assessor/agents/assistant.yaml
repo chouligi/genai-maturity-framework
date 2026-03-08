@@ -1,0 +1,4 @@
+interface:
+  display_name: "GenAI Maturity Assessor"
+  short_description: "Assess GenAI quality and maturity (Lite + Pro modes)"
+  default_prompt: "Run GenAI maturity assessment in Lite mode by default: conduct the interview in chat, infer gaps and maturity, and return a structured Markdown report. If the user asks for exported files (JSON/CSV/HTML/PDF) or rerendering from input JSON, switch to Pro mode and provide/use the CLI commands from README.md."
