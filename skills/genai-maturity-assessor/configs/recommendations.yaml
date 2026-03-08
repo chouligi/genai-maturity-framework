@@ -22,7 +22,7 @@ recommendations:
     full_action: Define and meet availability SLA targets with monitored fallback behavior.
   resilience:
     min_action: Raise automated pipeline (e.g., prompt updates, RAG index refresh, continuous evaluation) success rate to at least 80% per quarter.
-    full_action: Raise automated pipelinesuccess rate to at least 90% and enable automatic rollback.
+    full_action: Raise automated pipeline success rate to at least 90%.
   adaptability:
     min_action: Document a repeatable process for behavior updates.
     full_action: Automate update loops using feedback and evaluation-gated releases.
@@ -33,7 +33,7 @@ recommendations:
     min_action: Partially automate prompt/model update pipelines.
     full_action: Fully automate update/evaluation flow with versioning.
   operability:
-    min_action: Ensure versioned deployment and rollback. # todo: remove duplication 
+    min_action: Ensure versioned deployment and rollback.
     full_action: Add canary rollouts, safe rollback automation, and runtime kill switches.
   monitoring:
     min_action: Track core operational and token/cost metrics (e.g., response times, error rates, throughput, token usage).
