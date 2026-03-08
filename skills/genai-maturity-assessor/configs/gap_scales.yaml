@@ -1,11 +1,11 @@
 gaps:
-  no: 0
+  "no": 0
   small: 1
   large: 2
 
 fulfillment:
   full_met:
-    - no
+    - "no"
   min_met:
-    - no
+    - "no"
     - small

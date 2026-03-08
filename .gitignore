@@ -33,3 +33,6 @@ env/
 
 # Skill generated outputs
 skills/genai-maturity-assessor/reports/
+
+# Local agent instructions symlink
+AGENTS.md
