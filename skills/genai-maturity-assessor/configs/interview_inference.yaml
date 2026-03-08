@@ -1,0 +1,219 @@
+version: 1
+
+signals:
+  - key: golden_set_size
+    type: int
+    prompt: How many examples are in your golden evaluation set? (integer or ?)
+  - key: eval_automated_metrics
+    type: bool
+    prompt: Do you run automated evaluation metrics on the golden set? (y/n/?)
+    ask_if: golden_set_size >= 200
+  - key: eval_human_review
+    type: bool
+    prompt: Is the evaluation validated with expert human review? (y/n/?)
+    ask_if: golden_set_size >= 200
+  - key: ab_experiment_positive
+    type: bool
+    prompt: Have you run an A/B experiment showing positive business impact? (y/n/?)
+  - key: effectiveness_revalidated_after_changes
+    type: bool
+    prompt: Do you revalidate effectiveness after major model/prompt changes? (y/n/?)
+    ask_if: ab_experiment_positive == true
+  - key: latency_targets_tracked_and_met
+    type: bool
+    prompt: Are P95/P99 latency targets tracked and currently met? (y/n/?)
+  - key: accessible_serving_infrastructure
+    type: bool
+    prompt: Is the system deployed in accessible serving infrastructure for intended users? (y/n/?)
+  - key: costs_tracked
+    type: bool
+    prompt: Are total GenAI system costs comprehensively tracked? (y/n/?)
+  - key: value_exceeds_cost
+    type: bool
+    prompt: Is measurable business value greater than total system cost? (y/n/?)
+    ask_if: costs_tracked == true
+  - key: ops_automation_level
+    type: enum
+    options: [none, basic, full]
+    prompt: Operations automation level for eval/prompts/knowledge refresh? (none/basic/full/?)
+  - key: efficiency_optimized
+    type: bool
+    prompt: Are prompts/model routing/tuning optimized for cost-latency-performance tradeoffs? (y/n/?)
+    ask_if: ops_automation_level in ['basic', 'full']
+  - key: sla_with_fallback
+    type: bool
+    prompt: Does the deployed service meet defined SLA with fallback strategies? (y/n/?)
+  - key: update_pipeline_success_rate
+    type: int
+    prompt: What is automated update pipeline success rate per quarter (0-100, integer or ?)?
+  - key: rollback_capability
+    type: bool
+    prompt: Do update/release pipelines support reliable rollback? (y/n/?)
+  - key: behavior_update_manual_process
+    type: bool
+    prompt: Is there a documented manual process to update system behavior? (y/n/?)
+  - key: behavior_update_automated_with_feedback
+    type: bool
+    prompt: Are behavior updates automated with user-feedback integration? (y/n/?)
+    ask_if: behavior_update_manual_process == true
+  - key: dynamic_scaling_with_controls
+    type: bool
+    prompt: Does the system dynamically scale with rate limits and cost controls? (y/n/?)
+  - key: release_automation_level
+    type: enum
+    options: [none, partial, full]
+    prompt: Release/update process automation level? (none/partial/full/?)
+  - key: basic_monitoring_metrics
+    type: bool
+    prompt: Are core operational metrics monitored (latency/errors/throughput/tokens)? (y/n/?)
+  - key: continuous_automated_evaluation
+    type: bool
+    prompt: Is continuous automated quality evaluation running in production? (y/n/?)
+    ask_if: basic_monitoring_metrics == true
+  - key: artifacts_versioned
+    type: bool
+    prompt: Are prompts and code versioned in source control? (y/n/?)
+  - key: change_logs_with_rationale
+    type: bool
+    prompt: Are key artifact changes logged with rationale? (y/n/?)
+    ask_if: artifacts_versioned == true
+  - key: modularity_level
+    type: enum
+    options: [none, partial, full]
+    prompt: Component modularity level for retrieval/prompting/post-processing? (none/partial/full/?)
+  - key: test_coverage_percent
+    type: int
+    prompt: What is current automated test coverage percentage (0-100, integer or ?)?
+  - key: integration_and_adversarial_tests
+    type: bool
+    prompt: Do tests include integration and adversarial cases? (y/n/?)
+    ask_if: test_coverage_percent >= 80
+  - key: versioned_releases_with_rollback
+    type: bool
+    prompt: Is production deployment versioned with rollback support? (y/n/?)
+  - key: progressive_rollouts
+    type: bool
+    prompt: Do you use progressive rollouts for production changes? (y/n/?)
+    ask_if: versioned_releases_with_rollback == true
+  - key: runtime_kill_switches
+    type: bool
+    prompt: Are runtime kill switches available for rapid containment? (y/n/?)
+    ask_if: versioned_releases_with_rollback == true
+  - key: searchable_registry_entry
+    type: bool
+    prompt: Is the system registered in a searchable catalog with metadata and ownership? (y/n/?)
+  - key: prompt_style_guide
+    type: bool
+    prompt: Do prompts follow a consistent style guide? (y/n/?)
+  - key: unified_style_standards
+    type: bool
+    prompt: Are unified readability standards enforced for prompts and source code? (y/n/?)
+    ask_if: prompt_style_guide == true
+  - key: basic_metadata_logging
+    type: bool
+    prompt: Do you log prompt versions and core request metadata? (y/n/?)
+  - key: end_to_end_lineage_tracking
+    type: bool
+    prompt: Do you track end-to-end lineage across prompts/models/context/tools/post-processing? (y/n/?)
+    ask_if: basic_metadata_logging == true
+  - key: documentation_level
+    type: enum
+    options: [none, partial, comprehensive]
+    prompt: Documentation maturity level? (none/partial/comprehensive/?)
+  - key: explainability_basic_signals
+    type: bool
+    prompt: Do outputs include basic reasoning or confidence signals where applicable? (y/n/?)
+  - key: explainability_transparency_mechanisms
+    type: bool
+    prompt: Are user-facing transparency mechanisms implemented (citations/tool traces/confidence)? (y/n/?)
+    ask_if: explainability_basic_signals == true
+  - key: fairness_documented
+    type: bool
+    prompt: Are baseline fairness considerations explicitly documented? (y/n/?)
+  - key: fairness_evaluated_with_mitigation
+    type: bool
+    prompt: Is performance evaluated across relevant groups with mitigations for disparities? (y/n/?)
+    ask_if: fairness_documented == true
+  - key: designated_owner_team
+    type: bool
+    prompt: Is a designated team accountable for operating and maintaining the system? (y/n/?)
+  - key: standards_compliance_met
+    type: bool
+    prompt: Are applicable legal/regulatory/industry standards currently met? (y/n/?)
+  - key: security_baseline_controls
+    type: bool
+    prompt: Are baseline security controls in place (sanitization, secret handling, injection checks)? (y/n/?)
+  - key: security_multi_layer_with_adversarial_testing_and_audits
+    type: bool
+    prompt: Are multi-layer security controls in place with adversarial testing and regular audits? (y/n/?)
+    ask_if: security_baseline_controls == true
+
+sub_characteristics:
+  accuracy:
+    min_condition: golden_set_size >= 50
+    full_condition: golden_set_size >= 200 and eval_automated_metrics and eval_human_review
+  effectiveness:
+    min_condition: ab_experiment_positive
+    full_condition: ab_experiment_positive and effectiveness_revalidated_after_changes
+  responsiveness:
+    full_condition: latency_targets_tracked_and_met
+  usability:
+    full_condition: accessible_serving_infrastructure
+  cost_effectiveness:
+    min_condition: costs_tracked
+    full_condition: costs_tracked and value_exceeds_cost
+  efficiency:
+    min_condition: ops_automation_level in ['basic', 'full']
+    full_condition: efficiency_optimized and ops_automation_level in ['basic', 'full']
+  availability:
+    full_condition: sla_with_fallback
+  resilience:
+    min_condition: update_pipeline_success_rate >= 80
+    full_condition: update_pipeline_success_rate >= 90 and rollback_capability
+  adaptability:
+    min_condition: behavior_update_manual_process
+    full_condition: behavior_update_automated_with_feedback
+  scalability:
+    full_condition: dynamic_scaling_with_controls
+  repeatability:
+    min_condition: release_automation_level in ['partial', 'full']
+    full_condition: release_automation_level == 'full'
+  monitoring:
+    min_condition: basic_monitoring_metrics
+    full_condition: basic_monitoring_metrics and continuous_automated_evaluation
+  maintainability:
+    min_condition: artifacts_versioned
+    full_condition: artifacts_versioned and change_logs_with_rationale
+  modularity:
+    min_condition: modularity_level in ['partial', 'full']
+    full_condition: modularity_level == 'full'
+  testability:
+    min_condition: test_coverage_percent >= 50
+    full_condition: test_coverage_percent >= 80 and integration_and_adversarial_tests
+  operability:
+    min_condition: versioned_releases_with_rollback
+    full_condition: versioned_releases_with_rollback and progressive_rollouts and runtime_kill_switches
+  discoverability:
+    full_condition: searchable_registry_entry
+  readability:
+    min_condition: prompt_style_guide
+    full_condition: prompt_style_guide and unified_style_standards
+  traceability:
+    min_condition: basic_metadata_logging
+    full_condition: basic_metadata_logging and end_to_end_lineage_tracking
+  understandability:
+    min_condition: documentation_level in ['partial', 'comprehensive']
+    full_condition: documentation_level == 'comprehensive'
+  explainability:
+    min_condition: explainability_basic_signals
+    full_condition: explainability_basic_signals and explainability_transparency_mechanisms
+  fairness:
+    min_condition: fairness_documented
+    full_condition: fairness_evaluated_with_mitigation
+  ownership:
+    full_condition: designated_owner_team
+  standards_compliance:
+    full_condition: standards_compliance_met
+  vulnerability:
+    min_condition: security_baseline_controls
+    full_condition: security_multi_layer_with_adversarial_testing_and_audits

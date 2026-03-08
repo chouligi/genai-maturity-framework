@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
+import mimetypes
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -57,6 +59,33 @@ def _priority_buckets(items: list[dict[str, Any]]) -> dict[str, list[dict[str, A
     return buckets
 
 
+def _file_to_data_uri(path: Path) -> str:
+    mime_type, _ = mimetypes.guess_type(path.name)
+    if not mime_type:
+        mime_type = "application/octet-stream"
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{mime_type};base64,{encoded}"
+
+
+def _load_brand_logo_data_uri(assets_dir: Path) -> str | None:
+    preferred = [
+        assets_dir / "beyond_the_demo_logo.png",
+        assets_dir / "logo.png",
+        assets_dir / "logo.jpg",
+        assets_dir / "logo.jpeg",
+        assets_dir / "logo.svg",
+    ]
+    for candidate in preferred:
+        if candidate.exists() and candidate.is_file():
+            return _file_to_data_uri(candidate)
+
+    for ext in ("*.png", "*.jpg", "*.jpeg", "*.svg", "*.webp"):
+        for path in sorted(assets_dir.glob(ext)):
+            if path.is_file():
+                return _file_to_data_uri(path)
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Build GenAI maturity assessment report (JSON/CSV/HTML/PDF)."
@@ -89,9 +118,15 @@ def main() -> int:
             payload=payload,
             quality_model=cfg.quality_model,
             allowed_gaps=set(cfg.gap_scales["gaps"].keys()),
+            inference_config=cfg.interview_inference,
+            criticality_rules=cfg.criticality_rules,
         )
     else:
-        normalized = run_guided_interview(cfg.quality_model, cfg.criticality_rules)
+        normalized = run_guided_interview(
+            cfg.quality_model,
+            cfg.criticality_rules,
+            cfg.interview_inference,
+        )
 
     _validate_gap_values(normalized["gaps"], cfg)
     result = build_assessment_result(
@@ -100,10 +135,12 @@ def main() -> int:
         criticality_answers=normalized["criticality_answers"],
         gaps=normalized["gaps"],
         evidence=normalized["evidence"],
+        inference_rationale=normalized.get("inference_rationale", {}),
     )
 
     now_utc = datetime.now(timezone.utc)
     timestamp = now_utc.strftime("%Y%m%d_%H%M%S")
+    generated_at_display = now_utc.strftime("%Y-%m-%d %H:%M")
     output_dir = Path(args.output_dir) if args.output_dir else ROOT / "reports" / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -117,10 +154,23 @@ def main() -> int:
     write_json(json_path, result)
     write_gap_csv(csv_path, result["gap_items"])
 
+    inference_rationale = result.get("inference_rationale", {})
+    report_gap_items = [
+        {
+            **item,
+            "inference_rationale": inference_rationale.get(item["sub_characteristic"], ""),
+        }
+        for item in result["gap_items"]
+    ]
+
+    system_for_view = {**result["system"], "assessment_date": generated_at_display}
+
     report_view = {
         "title": "GenAI Quality and Maturity Assessment",
-        "system": result["system"],
+        "brand_logo_data_uri": _load_brand_logo_data_uri(assets_dir),
+        "system": system_for_view,
         "generated_at_utc": result["generated_at_utc"],
+        "generated_at": generated_at_display,
         "criticality": result["criticality"],
         "required_level": result["required_maturity_level"],
         "actual_level": result["actual_maturity_level"],
@@ -134,12 +184,12 @@ def main() -> int:
             }
             for cid, score in result["characteristic_scores"].items()
         ],
-        "priority_buckets": _priority_buckets(result["gap_items"]),
-        "gap_items": result["gap_items"],
+        "priority_buckets": _priority_buckets(report_gap_items),
+        "gap_items": report_gap_items,
         "action_counts": {
-            "critical": len([x for x in result["gap_items"] if x["priority"] == "critical"]),
-            "important": len([x for x in result["gap_items"] if x["priority"] == "important"]),
-            "nice_to_have": len([x for x in result["gap_items"] if x["priority"] == "nice_to_have"]),
+            "critical": len([x for x in report_gap_items if x["priority"] == "critical"]),
+            "important": len([x for x in report_gap_items if x["priority"] == "important"]),
+            "nice_to_have": len([x for x in report_gap_items if x["priority"] == "nice_to_have"]),
         },
     }
 

@@ -41,6 +41,7 @@ def main() -> int:
     print("- 25 sub-characteristics found")
     print("- quality_model, maturity_gates, and recommendations IDs match")
     print("- gate values and gap scales are valid")
+    print("- interview inference rules and signal expressions are valid")
     return 0
 
 

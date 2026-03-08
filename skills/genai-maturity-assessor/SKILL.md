@@ -66,6 +66,7 @@ uv run --python .venv/bin/python python skills/genai-maturity-assessor/scripts/b
 - `configs/gap_scales.yaml`: gap encoding and fulfillment semantics.
 - `configs/recommendations.yaml`: remediation actions for minimal/full targets.
 - `configs/criticality_rules.yaml`: business criticality and required maturity mapping.
+- `configs/interview_inference.yaml`: deterministic signal questions and gap inference rules.
 
 ## Input and Output Contracts
 
@@ -73,7 +74,7 @@ Interactive mode asks:
 
 1. System metadata.
 2. Criticality questions.
-3. Gap for each sub-characteristic (`no`, `small`, `large`; `small` disabled when minimal requirement is absent).
+3. Capability questions (signals), then infers each sub-characteristic gap (`no`, `small`, `large`).
 
 Pre-filled JSON input shape:
 
@@ -100,6 +101,25 @@ Pre-filled JSON input shape:
     "accuracy": "Golden set is 70 examples",
     "effectiveness": "No recent A/B run"
   }
+}
+```
+
+Signals-based JSON input is also supported:
+
+```json
+{
+  "system": {
+    "name": "My GenAI System"
+  },
+  "criticality_answers": {
+    "in_production": true
+  },
+  "signals": {
+    "golden_set_size": 220,
+    "eval_automated_metrics": true,
+    "eval_human_review": true
+  },
+  "evidence": {}
 }
 ```
 

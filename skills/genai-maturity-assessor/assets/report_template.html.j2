@@ -17,8 +17,32 @@
   {% endif %}
   <main class="page">
     <section class="hero">
-      <h1>{{ data.title }}</h1>
-      <p class="subtitle">System: <strong>{{ data.system.name or "Unnamed" }}</strong> | Team: {{ data.system.owner_team or "N/A" }} | Date: {{ data.system.assessment_date or "N/A" }} | Assessor: {{ data.system.assessor or "N/A" }}</p>
+      <div class="hero-head">
+        <h1>{{ data.title }}</h1>
+        {% if data.brand_logo_data_uri %}
+        <div class="brand-logo-wrap">
+          <img src="{{ data.brand_logo_data_uri }}" alt="Beyond the Demo logo" class="brand-logo" />
+        </div>
+        {% endif %}
+      </div>
+      <div class="hero-meta-grid">
+        <div class="hero-meta-card">
+          <div class="meta-label">System</div>
+          <div class="meta-value">{{ data.system.name or "Unnamed" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Team</div>
+          <div class="meta-value">{{ data.system.owner_team or "N/A" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Date</div>
+          <div class="meta-value">{{ data.system.assessment_date or "N/A" }}</div>
+        </div>
+        <div class="hero-meta-card">
+          <div class="meta-label">Assessor</div>
+          <div class="meta-value">{{ data.system.assessor or "N/A" }}</div>
+        </div>
+      </div>
       <div class="summary-grid">
         <article class="card">
           <div class="label">Quality Score</div>
@@ -48,6 +72,19 @@
     </section>
 
     <section class="section">
+      <h2>Maturity Level</h2>
+      <div class="ladder">
+        {% for level in [1,2,3,4,5] %}
+        <div class="level{% if level == data.actual_level %} actual{% endif %}{% if level == data.required_level %} required{% endif %}">L{{ level }}</div>
+        {% endfor %}
+      </div>
+      <div class="ladder-legend">
+        <span class="legend-item"><span class="legend-dot actual"></span>Current maturity</span>
+        <span class="legend-item"><span class="legend-dot required"></span>Expected maturity based on business criticality</span>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Characteristic Scores</h2>
       {% for item in data.characteristics %}
       <div class="score-row">
@@ -56,15 +93,6 @@
         <div><strong>{{ "%.1f"|format(item.score) }}</strong></div>
       </div>
       {% endfor %}
-    </section>
-
-    <section class="section">
-      <h2>Maturity Ladder</h2>
-      <div class="ladder">
-        {% for level in [1,2,3,4,5] %}
-        <div class="level{% if level == data.actual_level %} actual{% endif %}{% if level == data.required_level %} required{% endif %}">L{{ level }}</div>
-        {% endfor %}
-      </div>
     </section>
 
     <section class="section">
@@ -82,10 +110,6 @@
           <div class="label">Nice-to-have actions</div>
           <div class="value">{{ data.action_counts.nice_to_have }}</div>
         </article>
-        <article class="card">
-          <div class="label">Generated (UTC)</div>
-          <div class="value time">{{ data.generated_at_utc }}</div>
-        </article>
       </div>
     </section>
 
@@ -98,8 +122,9 @@
           {% for item in data.priority_buckets.critical %}
           <article class="gap-item critical">
             <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
-            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Needed gate: {{ item.target_gate }}</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
             {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
             <div class="action"><strong>Action:</strong> {{ item.action }}</div>
           </article>
           {% endfor %}
@@ -114,8 +139,9 @@
           {% for item in data.priority_buckets.important %}
           <article class="gap-item important">
             <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
-            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Needed gate: {{ item.target_gate }}</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
             {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
             <div class="action"><strong>Action:</strong> {{ item.action }}</div>
           </article>
           {% endfor %}
@@ -130,8 +156,9 @@
           {% for item in data.priority_buckets.nice_to_have %}
           <article class="gap-item nice_to_have">
             <div><strong>{{ item.display_name }}</strong> ({{ item.characteristic }})</div>
-            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Needed gate: {{ item.target_gate }}</div>
+            <div class="gap-meta">Current gap: {{ item.current_gap }} | Blocks level: L{{ item.first_unmet_level }} | Required quality requirement: {{ item.target_gate }}</div>
             {% if item.evidence %}<div class="gap-meta">Evidence: {{ item.evidence }}</div>{% endif %}
+            {% if item.inference_rationale %}<div class="gap-meta"><strong>Scoring rationale:</strong> {{ item.inference_rationale }}</div>{% endif %}
             <div class="action"><strong>Action:</strong> {{ item.action }}</div>
           </article>
           {% endfor %}
@@ -172,6 +199,7 @@
 
     <section class="section">
       <p class="footer-note">Method: gap scores no=0, small=1, large=2; quality score uses denominator 2 x assessed sub-characteristics. Maturity level computed from Table 1 level gates encoded in configs.</p>
+      <p class="footer-note">© 2026 George Chouliaras. All rights reserved.</p>
     </section>
   </main>
 </body>

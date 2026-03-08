@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import csv
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,7 @@ class LoadedConfigs:
     gap_scales: dict[str, Any]
     recommendations: dict[str, Any]
     criticality_rules: dict[str, Any]
+    interview_inference: dict[str, Any]
 
 
 class ConfigError(Exception):
@@ -45,13 +47,21 @@ def load_configs(config_dir: Path) -> LoadedConfigs:
     gap_scales = _load_yaml(config_dir / "gap_scales.yaml")
     recommendations = _load_yaml(config_dir / "recommendations.yaml")
     criticality_rules = _load_yaml(config_dir / "criticality_rules.yaml")
+    interview_inference = _load_yaml(config_dir / "interview_inference.yaml")
     return LoadedConfigs(
         quality_model=quality_model,
         maturity_gates=maturity_gates,
         gap_scales=gap_scales,
         recommendations=recommendations,
         criticality_rules=criticality_rules,
+        interview_inference=interview_inference,
     )
+
+
+def _extract_expression_names(expression: str) -> set[str]:
+    node = ast.parse(expression, mode="eval")
+    names = {expr.id for expr in ast.walk(node) if isinstance(expr, ast.Name)}
+    return {name for name in names if name.lower() not in {"true", "false"}}
 
 
 def validate_configs(cfg: LoadedConfigs) -> list[str]:
@@ -133,6 +143,110 @@ def validate_configs(cfg: LoadedConfigs) -> list[str]:
         errors.append("gap_scales.yaml: fulfillment.full_met must be exactly ['no']")
     if min_met != {"no", "small"}:
         errors.append("gap_scales.yaml: fulfillment.min_met must be exactly ['no', 'small']")
+
+    interview_cfg = cfg.interview_inference
+    signals = interview_cfg.get("signals", [])
+    if not isinstance(signals, list):
+        errors.append("interview_inference.yaml: 'signals' must be a list")
+        signal_keys: set[str] = set()
+    else:
+        signal_keys = set()
+        for signal in signals:
+            if not isinstance(signal, dict):
+                errors.append("interview_inference.yaml: each signal must be a mapping")
+                continue
+            key = str(signal.get("key", "")).strip()
+            signal_type = str(signal.get("type", "")).strip().lower()
+            if not key:
+                errors.append("interview_inference.yaml: each signal requires a non-empty key")
+                continue
+            if key in signal_keys:
+                errors.append(f"interview_inference.yaml: duplicate signal key '{key}'")
+            signal_keys.add(key)
+            if signal_type not in {"bool", "int", "float", "enum"}:
+                errors.append(
+                    f"interview_inference.yaml: signal '{key}' has unsupported type '{signal_type}'"
+                )
+            if signal_type == "enum" and not isinstance(signal.get("options"), list):
+                errors.append(
+                    f"interview_inference.yaml: enum signal '{key}' must define options list"
+                )
+            ask_if = signal.get("ask_if")
+            if ask_if:
+                try:
+                    unknown_names = _extract_expression_names(str(ask_if)) - signal_keys
+                    if unknown_names:
+                        errors.append(
+                            f"interview_inference.yaml: signal '{key}' ask_if uses unknown signals: "
+                            + ", ".join(sorted(unknown_names))
+                        )
+                except SyntaxError:
+                    errors.append(
+                        f"interview_inference.yaml: signal '{key}' ask_if has invalid expression syntax"
+                    )
+
+    rules = interview_cfg.get("sub_characteristics", {})
+    if not isinstance(rules, dict):
+        errors.append("interview_inference.yaml: 'sub_characteristics' must be a mapping")
+    else:
+        rule_ids = set(rules.keys())
+        if quality_set != rule_ids:
+            missing = sorted(quality_set - rule_ids)
+            extra = sorted(rule_ids - quality_set)
+            if missing:
+                errors.append(
+                    "interview_inference.yaml is missing IDs from quality_model.yaml: "
+                    + ", ".join(missing)
+                )
+            if extra:
+                errors.append(
+                    "quality_model.yaml is missing IDs from interview_inference.yaml: "
+                    + ", ".join(extra)
+                )
+
+        by_id = {item["id"]: item for item in subchars if isinstance(item, dict)}
+        for sid, rule in rules.items():
+            if not isinstance(rule, dict):
+                errors.append(
+                    f"interview_inference.yaml: sub-characteristic '{sid}' rule must be a mapping"
+                )
+                continue
+            full_condition = rule.get("full_condition")
+            if not isinstance(full_condition, str) or not full_condition.strip():
+                errors.append(
+                    f"interview_inference.yaml: sub-characteristic '{sid}' needs full_condition"
+                )
+            else:
+                try:
+                    unknown_names = _extract_expression_names(full_condition) - signal_keys
+                    if unknown_names:
+                        errors.append(
+                            f"interview_inference.yaml: '{sid}' full_condition uses unknown signals: "
+                            + ", ".join(sorted(unknown_names))
+                        )
+                except SyntaxError:
+                    errors.append(
+                        f"interview_inference.yaml: '{sid}' full_condition has invalid syntax"
+                    )
+
+            has_min_requirement = by_id.get(sid, {}).get("minimal_requirement", "-") != "-"
+            min_condition = rule.get("min_condition")
+            if has_min_requirement and not isinstance(min_condition, str):
+                errors.append(
+                    f"interview_inference.yaml: sub-characteristic '{sid}' needs min_condition"
+                )
+            if isinstance(min_condition, str):
+                try:
+                    unknown_names = _extract_expression_names(min_condition) - signal_keys
+                    if unknown_names:
+                        errors.append(
+                            f"interview_inference.yaml: '{sid}' min_condition uses unknown signals: "
+                            + ", ".join(sorted(unknown_names))
+                        )
+                except SyntaxError:
+                    errors.append(
+                        f"interview_inference.yaml: '{sid}' min_condition has invalid syntax"
+                    )
 
     return errors
 
@@ -286,6 +400,7 @@ def build_assessment_result(
     criticality_answers: dict[str, bool],
     gaps: dict[str, str],
     evidence: dict[str, str],
+    inference_rationale: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     criticality_label, required_level = classify_criticality(
         criticality_answers, cfg.criticality_rules
@@ -318,4 +433,5 @@ def build_assessment_result(
         "gap_items": gap_items,
         "gaps": gaps,
         "evidence": evidence,
+        "inference_rationale": inference_rationale or {},
     }
