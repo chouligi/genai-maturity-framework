@@ -8,6 +8,7 @@
 *.pdf
 *.pptx
 *.pages
+!examples/reports/example_pro_report.pdf
 
 # Python
 __pycache__/
