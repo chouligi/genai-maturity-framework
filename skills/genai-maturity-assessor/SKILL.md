@@ -1,6 +1,6 @@
 ---
 name: genai-maturity-assessor
-description: Assess GenAI system maturity in two modes: Lite mode (no-code Markdown report in assistant UI) and Pro mode (Python package with JSON/CSV/HTML/PDF artifacts).
+description: "Assess GenAI system maturity in two modes: Lite mode (no-code Markdown report in assistant UI) and Pro mode (Python package with JSON/CSV/HTML/PDF artifacts)."
 ---
 
 # GenAI Maturity Assessor
