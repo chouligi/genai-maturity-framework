@@ -84,6 +84,12 @@ uv run --python .venv/bin/python genai-maturity-report \
   --output-dir /tmp/genai_assessment_out
 ```
 
+Notes for input JSON:
+- `gaps` are required (all sub-characteristics must be present when using gaps mode).
+- `evidence` is optional. If omitted, empty evidence is used.
+- `evidence` is only used as supporting context in outputs (HTML report and `gaps.csv`); it does not change score,
+  maturity level, or prioritization logic.
+
 ### Rebuild from an existing assessment result
 `assessment_result.json` is accepted directly (criticality is inferred when needed):
 ```bash
