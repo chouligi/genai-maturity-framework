@@ -20,6 +20,7 @@ dev = ["pytest>=8.0"]
 genai-maturity-report = "genai_maturity.cli.build_report:main"
 genai-maturity-validate = "genai_maturity.cli.validate_configs:main"
 genai-maturity-render-pdf = "genai_maturity.cli.render_pdf_playwright:main"
+genai-maturity-sync-skill = "genai_maturity.cli.sync_skill_bundle:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

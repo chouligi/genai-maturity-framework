@@ -27,10 +27,10 @@ signals:
     prompt: Is the system deployed in accessible serving infrastructure for intended users? (y/n/?)
   - key: costs_tracked
     type: bool
-    prompt: Are total GenAI system costs comprehensively tracked? (y/n/?)
+    prompt: Are the total GenAI system costs comprehensively tracked? (y/n/?)
   - key: value_exceeds_cost
     type: bool
-    prompt: Is measurable business value greater than total system cost? (y/n/?)
+    prompt: Is the measurable business value greater than the total system cost? (y/n/?)
     ask_if: costs_tracked == true
   - key: ops_automation_level
     type: enum
@@ -45,7 +45,7 @@ signals:
     prompt: Does the deployed service meet defined SLA with fallback strategies? (y/n/?)
   - key: update_pipeline_success_rate
     type: int
-    prompt: What is automated update pipeline success rate per quarter (0-100, integer or ?)?
+    prompt: What is the automated update pipeline success rate per quarter (0-100, integer or ?)?
   - key: rollback_capability
     type: bool
     prompt: Do update/release pipelines support reliable rollback? (y/n/?)
